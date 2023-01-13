@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -11,11 +12,11 @@ import (
 	"github.com/tarm/serial"
 )
 
-const comport = "/dev/ttyUSB1"
+var comport = flag.String("tty", "/dev/ttyUSB0", "path to the usb virtual serial port of the temperx232")
 
 func main() {
 
-	c := &serial.Config{Name: comport, Baud: 9600}
+	c := &serial.Config{Name: *comport, Baud: 9600}
 	f, err := serial.OpenPort(c)
 	if err != nil {
 		log.Fatalf("error opening serial port: %v", err)
@@ -56,10 +57,10 @@ func main() {
 			continue
 		}
 		//log.Printf("Temp: %2.2f     Hum:%2.2f", t, h)
-		ioProvider.Mutex.Lock()
+		ioProvider.InMutex.Lock()
 		inInstance.Temperature = t
 		inInstance.Humidity = h
-		ioProvider.Mutex.Unlock()
+		ioProvider.InMutex.Unlock()
 		err_ctr = 0
 
 	}

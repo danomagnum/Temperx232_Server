@@ -36,7 +36,7 @@ func class1serve() {
 		log.Printf("problem parsing path. %v", err)
 		os.Exit(1)
 	}
-	r.AddHandler(path3.Bytes(), &ioProvider)
+	r.Handle(path3.Bytes(), &ioProvider)
 
 	s := gologix.NewServer(&r)
 	s.Serve()
