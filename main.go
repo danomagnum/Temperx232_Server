@@ -55,14 +55,18 @@ func main() {
 			err_ctr++
 			continue
 		}
-		log.Printf("Temp: %2.2f     Hum:%2.2f", t, h)
+		//log.Printf("Temp: %2.2f     Hum:%2.2f", t, h)
+		ioProvider.Mutex.Lock()
+		inInstance.Temperature = t
+		inInstance.Humidity = h
+		ioProvider.Mutex.Unlock()
 		err_ctr = 0
 
 	}
 
 }
 
-func ParseTempHum(result string) (t, h float64, err error) {
+func ParseTempHum(result string) (t, h float32, err error) {
 	data_start_pos := strings.Index(result, "Temp-Inner:")
 	data := result[data_start_pos+11:]
 	split := strings.Split(data, ",")
@@ -76,11 +80,14 @@ func ParseTempHum(result string) (t, h float64, err error) {
 	temp_str := strings.Split(temp_raw, " ")[0]
 	hum_str := strings.Split(hum_raw, " ")[0]
 
-	t, err = strconv.ParseFloat(temp_str, 64)
+	t64, err := strconv.ParseFloat(temp_str, 32)
 	if err != nil {
 		return
 	}
-	h, err = strconv.ParseFloat(hum_str, 64)
+	h64, err := strconv.ParseFloat(hum_str, 32)
+
+	t = float32(t64)
+	h = float32(h64)
 
 	return
 }

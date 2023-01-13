@@ -18,6 +18,7 @@ type OutStr struct {
 
 var inInstance InStr
 var outInstance OutStr
+var ioProvider gologix.IOProvider[InStr, OutStr]
 
 func class1serve() {
 	r := gologix.PathRouter{}
@@ -26,7 +27,7 @@ func class1serve() {
 
 	// an IO handler in slot 2
 	//p3 := gologix.IOProvider[InStr, OutStr]{}
-	p3 := gologix.IOProvider[InStr, OutStr]{
+	ioProvider = gologix.IOProvider[InStr, OutStr]{
 		In:  &inInstance,
 		Out: &outInstance,
 	}
@@ -35,7 +36,7 @@ func class1serve() {
 		log.Printf("problem parsing path. %v", err)
 		os.Exit(1)
 	}
-	r.AddHandler(path3.Bytes(), &p3)
+	r.AddHandler(path3.Bytes(), &ioProvider)
 
 	s := gologix.NewServer(&r)
 	s.Serve()
